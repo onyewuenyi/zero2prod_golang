@@ -45,5 +45,4 @@ func (f *form) subscribe(form form, db *sql.DB) error {
 
 // docker run -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
 
-
-go mod init github.com/onyewuenyi/zero2prod_golang
+// go mod init github.com/onyewuenyi/zero2prod_golang
