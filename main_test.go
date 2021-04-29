@@ -2,6 +2,8 @@
 package main_test
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 )
@@ -15,25 +17,53 @@ func TestMain(m *testing.M) {
 		os.Getenv("APP_DB_NAME"))
 
 	// TODO what does this do. Rust does not do this check
-
 	// ensureTableExists()
 
 	code := m.Run()
-	clearTable()
+
+	// clearTable()
+
 	os.Exit(code)
 }
 
-// fn ensureTableExists, which does some db checking
-func clearTable() {
-	app.DB.Exec("DELETE FROM  subscriptions")
-	app.DB.Exec("ALTER SEQUENCE ")
+func TestHealthCheck(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/health_check", nil)
+	res := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, res.Code)
+
 }
 
-// specified in Rust migrations/*.sql
-const tableCreationQuery = `CREATE TABLE IF NOT EXISTS subscriptions(
-    id uuid NOT NULL,
-    PRIMARY KEY (id),
-    email TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL,
-    subscribed_as timestamptz NOT NULL
-)`
+func checkResponseCode(t *testing.T, expected, actual int) {
+	if expected != actual {
+		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+	}
+
+}
+
+func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+	rr := httptest.NewRecorder()
+	app.Router.ServeHTTP(rr, req)
+	return rr
+}
+
+// // fn ensureTableExists, which does some db checking
+// func clearTable() {
+// 	app.DB.Exec("DELETE FROM  subscriptions")
+// 	app.DB.Exec("ALTER SEQUENCE ")
+// }
+
+// // specified in Rust migrations/*.sql
+// const tableCreationQuery = `CREATE TABLE IF NOT EXISTS subscriptions(
+//     id uuid NOT NULL,
+//     PRIMARY KEY (id),
+//     email TEXT NOT NULL UNIQUE,
+//     name TEXT NOT NULL,
+//     subscribed_as timestamptz NOT NULL
+// )`
+
+// func ensureTableExists() {
+// 	if _, err := app.DB.Exec(tableCreationQuery); err != nil {
+// 		log.Fatal(err)
+// 	}
+// }

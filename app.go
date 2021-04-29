@@ -4,9 +4,9 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -26,17 +26,30 @@ func (app *App) Initialize(user, password, dbname string) {
 		log.Fatal(err)
 	}
 	app.Router = mux.NewRouter()
+	app.initializeRoutes()
 }
 
-func (app *App) Run(addr string) {}
+func (app *App) Run(addr string) {
+	log.Fatal(http.ListenAndServe(":8010", app.Router))
+}
 
-type form struct {
+type Form struct {
 	Name  string
 	Email string
 }
 
-func (f *form) subscribe(form form, db *sql.DB) error {
-	return errors.New("Not implemented")
+// func (app *App) subscribe(form Form, db *sql.DB) error {
+// 	return errors.New("Not implemented")
+// }
+
+func (app *App) healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Server", "A Go Web Server")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app *App) initializeRoutes() {
+	app.Router.HandleFunc("/health_check", app.healthCheck).Methods("GET")
+	// app.Router.HandleFunc("/subscriptions", app.subscribe).Methods("POST")
 }
 
 // run test against a db
