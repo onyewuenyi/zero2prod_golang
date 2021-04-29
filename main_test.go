@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/onyewuenyi/zero2prod_golang/main"
+	"github.com/onyewuenyi/zero2prod_golang"
 )
 
 var app main.App
