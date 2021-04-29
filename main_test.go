@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/onyewuenyi/zero2prod_golang/main"
 )
 
 var app main.App

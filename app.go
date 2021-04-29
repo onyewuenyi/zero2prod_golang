@@ -12,11 +12,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// struct that exposes refs to App's router and db
+// Init and Run defines the struct behavior to make it useful and testable behavior
 type App struct {
 	Router *mux.Router
 	DB     *sql.DB
 }
 
+// wire up routes to to res and db details
 func (app *App) Initialize(user, password, dbname string) {
 	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", user, password, dbname)
 
@@ -29,6 +32,7 @@ func (app *App) Initialize(user, password, dbname string) {
 	app.initializeRoutes()
 }
 
+// start app server
 func (app *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(":8010", app.Router))
 }
